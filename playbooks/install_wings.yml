@@ -12,11 +12,10 @@
       set_fact:
         ansible_pull_env: >-
           {{ lookup('file', ansible_pull_env_file)
-             | splitlines
+             | split('\n')
              | map('split', '=', 1)
              | items2dict }}
-
-        
+ 
     - name: Create directory for Wings config
       file:
         path: /etc/pterodactyl
