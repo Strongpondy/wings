@@ -11,10 +11,15 @@
     - name: Load ansible-pull environment variables
       set_fact:
         ansible_pull_env: >-
-          {{ lookup('file', ansible_pull_env_file)
-             | split('\n')
-             | map('split', '=', 1)
-             | items2dict }}
+          {{
+            lookup('file', ansible_pull_env_file)
+            | split('\n')
+            | map('trim')
+            | reject('equalto','')
+            | map('split', '=', 1)
+            | list
+            | items2dict
+          }}
  
     - name: Create directory for Wings config
       file:
