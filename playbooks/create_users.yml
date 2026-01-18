@@ -13,7 +13,7 @@
 
   - name: Add 'tom' ssh key
     ansible.posix.authorized_key:
-      user: idean
+      user: tom
       state: present
       key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHJL8307fbOybvMS5/8X/hDNsnIdgSMc+TLZE6BlG+DY
 
