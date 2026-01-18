@@ -37,5 +37,8 @@
     - ansible_os_family == 'Debian'
     - autoupdate_enabled | bool
 
+- name: Certbot
+  import_playbook: certbot.yml
+
 - name: Wings
   import_playbook: install_wings.yml
