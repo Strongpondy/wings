@@ -34,6 +34,14 @@
       args:
         executable: /bin/bash
 
+    - name: Create SSH key for Pterodactyl SFTP
+      become: yes
+      become_user: pterodactyl
+      become_flags: '-s /bin/bash'
+      command: ssh-keygen -t ed25519 -f /var/lib/pterodactyl/volumes/.sftp/id_ed25519 -N ""
+      args:
+        creates: /var/lib/pterodactyl/volumes/.sftp/id_ed25519
+
     - name: Enable and start Wings service
       systemd:
         name: wings
