@@ -4,8 +4,8 @@
   become: yes
 
   vars:
-    domain_name: "s2.krakenservers.net"
-    html_template_path: "/home/idean/ansible/playbooks/templates/index.html.j2"
+    domain_name: "{{ lookup('env','PROVISION_FQDN') }}"
+    html_template_path: "{{ playbook_dir }}/templates/index.html.j2"
     html_dest_path: "/var/www/html/index.html"
 
   tasks:
