@@ -79,10 +79,10 @@
       register: certbot_result
       changed_when: "'Successfully deployed certificate' in certbot_result.stdout"
 
-- name: Show certbot result
-  debug:
-    msg: "{{ certbot_result.stdout_lines }}"
-  when: certbot_result.stdout_lines is defined
+    - name: Show certbot result
+      debug:
+        msg: "{{ certbot_result.stdout_lines }}"
+      when: certbot_result.stdout_lines is defined
 
     - name: Add Certbot renewal to crontab
       cron:
