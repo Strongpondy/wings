@@ -36,25 +36,13 @@
 
     - name: Create SSH key for Pterodactyl SFTP
       become: yes
-      command: ssh-keygen -t ed25519 -f /var/lib/pterodactyl/volumes/.sftp/id_ed25519 -N ""
-      args:
-        creates: /var/lib/pterodactyl/volumes/.sftp/id_ed25519
-    
-    - name: Set ownership on private key
-      become: yes
-      file:
+      community.crypto.openssh_keypair:
         path: /var/lib/pterodactyl/volumes/.sftp/id_ed25519
+        type: ed25519
         owner: pterodactyl
         group: pterodactyl
         mode: '0600'
-    
-    - name: Set ownership on public key
-      become: yes
-      file:
-        path: /var/lib/pterodactyl/volumes/.sftp/id_ed25519.pub
-        owner: pterodactyl
-        group: pterodactyl
-        mode: '0644'
+        comment: "pterodactyl-sftp"
 
     - name: Enable and start Wings service
       systemd:
