@@ -1,0 +1,34 @@
+new_user: tom
+ssh_config_path: /etc/ssh/sshd_config
+sshd_name: ssh
+ssh_port: 22
+ssh_password_authentication: "no"
+ssh_permit_root_login: "no"
+ssh_usedns: "no"
+ssh_usepam: "yes"
+ssh_permit_empty_password: "no"
+ssh_challenge_response_auth: "no"
+ssh_gss_api_authentication: "no"
+ssh_x11_forwarding: "no"
+sshd_state: started
+ssh_restart_handler_state: restarted
+ssh_allowed_users: [tom]
+swap_size: "4G"
+
+ssh_allowed_groups: []
+
+sudoers_passwordless: []
+
+sudoers_passworded: [tom]
+
+autoupdate_enabled: true
+autoupdate_blacklist: []
+
+# Autoupdate mail settings used on Debian/Ubuntu only.
+autoupdate_reboot: "false"
+autoupdate_reboot_time: "03:00"
+autoupdate_mail_to: "tom"
+autoupdate_mail_on_error: true
+
+fail2ban_enabled: true
+fail2ban_configuration_template: "jail.local.j2"

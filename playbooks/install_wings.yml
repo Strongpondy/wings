@@ -1,0 +1,63 @@
+---
+- name: Deploy Wings Game Server Control Panel
+  hosts: "all"
+  become: yes
+
+  vars:
+    wings_panel_url: "https://panel.krakenservers.net"
+    wings_token: "{{ lookup('env', 'PROVISION_TOKEN') }}"
+    wings_node: "{{ lookup('env', 'PROVISION_NODE') }}"
+
+  tasks:
+    - name: Create directory for Wings config
+      file:
+        path: /etc/pterodactyl
+        state: directory
+        mode: "0755"
+
+    - name: Copy Wings service template to server
+      template:
+        src: wings.service.j2
+        dest: /etc/systemd/system/wings.service
+      notify: Restart Wings Service
+
+    - name: Download and install Wings
+      shell: |
+        curl -L -o /usr/local/bin/wings "https://github.com/pterodactyl/wings/releases/latest/download/wings_linux_$([[ "$(uname -m)" == "x86_64" ]] && echo "amd64" || echo "arm64")"
+        chmod +x /usr/local/bin/wings
+      args:
+        executable: /bin/bash
+
+    - name: Configure Wings with panel URL and token
+      shell: |
+        cd /etc/pterodactyl && wings configure --panel-url {{ wings_panel_url }} --token {{ PROVISION_TOKEN }} --node {{ PROVISION_NODE }}
+      args:
+        executable: /bin/bash
+
+    - name: Enable and start Wings service
+      systemd:
+        name: wings
+        state: started
+        enabled: yes
+    
+    - name: Allow Panel.
+      ufw:
+        rule: allow
+        port: "8443"
+        proto: tcp
+
+    - name: Allow FTP.
+      ufw:
+        rule: allow
+        port: "2022"
+        proto: tcp
+
+    - name: Reload ufw
+      command: ufw reload
+
+  handlers:
+    - name: Restart Wings Service
+      systemd:
+        name: wings
+        state: restarted
+        enabled: yes

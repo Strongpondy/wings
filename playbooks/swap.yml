@@ -1,0 +1,34 @@
+---
+- name: Setup Swap on Ubuntu
+  hosts: "all"
+  vars_files:
+    - ~/ansible/vars/main.yml
+  become: yes  # Run tasks with root privileges
+
+  tasks:
+    - name: Create swap file
+      command: fallocate -l {{ swap_size }} {{ swap_file }}
+      args:
+        creates: "{{ swap_file }}"  # Check if the swap file already exists
+      register: swap_created
+
+    - name: Set correct permissions for swap file
+      command: chmod 600 {{ swap_file }}
+      when: swap_created.changed  # Only run this task if the swap file was created
+
+    - name: Format swap file
+      command: mkswap {{ swap_file }}
+      when: swap_created.changed  # Only run this task if the swap file was created
+
+    - name: Activate swap
+      command: swapon {{ swap_file }}
+      when: swap_created.changed  # Only run this task if the swap file was created
+
+    - name: Add swap file entry to fstab for persistence
+      lineinfile:
+        path: /etc/fstab
+        line: "{{ swap_file }} none swap sw 0 0"
+      when: swap_created.changed  # Only run this task if the swap file was created
+
+  vars:
+    swap_file: /swapfile

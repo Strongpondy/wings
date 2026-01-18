@@ -1,0 +1,23 @@
+- hosts: "all"
+  vars_files:
+    - ~/ansible/vars/main.yml
+  become: "yes"
+  tasks:
+
+  - name: Enable firewall.
+    ufw:
+      state: enabled
+      policy: deny
+
+  - name: Allow SSH.
+    ufw:
+      rule: allow
+      port: "{{ ssh_port }}"
+      proto: tcp
+
+  - name: Enable logging.
+    ufw:
+      logging: on
+
+  - name: Reload ufw
+    command: ufw reload

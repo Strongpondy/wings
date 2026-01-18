@@ -1,0 +1,19 @@
+- hosts: "all"
+  vars_files:
+    - ~/ansible/vars/main.yml
+  become: "yes"
+  tasks:
+
+  - name: Add user 'tom'
+    ansible.builtin.user:
+      name: tom
+      shell: /bin/bash
+      groups: sudo
+      append: yes
+
+  - name: Add 'tom' ssh key
+    ansible.posix.authorized_key:
+      user: idean
+      state: present
+      key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHJL8307fbOybvMS5/8X/hDNsnIdgSMc+TLZE6BlG+DY
+

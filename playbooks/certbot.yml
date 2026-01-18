@@ -1,0 +1,80 @@
+---
+- name: Install and Configure Certbot with Nginx
+  hosts: "all"
+  become: yes
+
+  vars:
+    domain_name: "s2.krakenservers.net"
+    html_template_path: "/home/idean/ansible/playbooks/templates/index.html.j2"
+    html_dest_path: "/var/www/html/index.html"
+
+  tasks:
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
+
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+    - name: Configure temporary site for HTTP challenge
+      template:
+        src: nginx_temporary_site.conf.j2
+        dest: /etc/nginx/sites-available/{{ domain_name }}
+      notify: Reload Nginx
+
+    - name: Enable temporary site
+      file:
+        src: /etc/nginx/sites-available/{{ domain_name }}
+        dest: /etc/nginx/sites-enabled/{{ domain_name }}
+        state: link
+      notify: Reload Nginx
+
+    - name: Create HTML file for HTTP challenge
+      template:
+        src: "{{ html_template_path }}"
+        dest: "{{ html_dest_path }}"
+
+    - name: Allow port 80 traffic through UFW
+      ufw:
+        rule: allow
+        port: 80
+        proto: tcp
+
+    - name: Allow port 443 (HTTPS) traffic through UFW
+      ufw:
+        rule: allow
+        port: 443
+        proto: tcp
+
+    - name: Reload UFW firewall
+      command: ufw reload
+
+    - name: Install Certbot
+      apt:
+        name: certbot
+        state: present
+
+    - name: Install Certbot plugin for Nginx
+      apt:
+        name: python3-certbot-nginx
+        state: present
+      when: ansible_pkg_mgr == 'apt'  # Only install for systems using APT package manager
+
+    #- name: Obtain SSL certificate using Certbot
+    #  command: certbot certonly --nginx --agree-tos --email admin@krakenservers.net -d {{ domain_name }}
+    #  ignore_errors: yes  # Certbot may fail if the certificate already exists or for other reasons
+
+    - name: Add Certbot renewal to crontab
+      cron:
+        name: "Renew SSL certificates with Certbot"
+        minute: "0"
+        hour: "23"
+        job: "certbot renew --quiet --deploy-hook 'systemctl reload nginx'"
+
+  handlers:
+    - name: Reload Nginx
+      systemd:
+        name: nginx
+        state: reloaded
