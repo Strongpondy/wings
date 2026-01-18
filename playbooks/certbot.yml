@@ -70,7 +70,7 @@
 
     - name: Obtain SSL certificate using Certbot
       command: certbot certonly --nginx --agree-tos --email admin@krakenservers.net -d {{ domain_name }}
-      ignore_errors: yes  # Certbot may fail if the certificate already exists or for other reasons
+      ignore_errors: no  # Certbot may fail if the certificate already exists or for other reasons
 
     - name: Add Certbot renewal to crontab
       cron:
