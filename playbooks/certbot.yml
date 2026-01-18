@@ -68,9 +68,10 @@
         state: present
       when: ansible_pkg_mgr == 'apt'  # Only install for systems using APT package manager
 
-    - name: Obtain SSL certificate using Certbot
-      command: certbot certonly --nginx --agree-tos --email admin@krakenservers.net -d {{ domain_name }}
-      ignore_errors: no  # Certbot may fail if the certificate already exists or for other reasons
+    - name: Obtain SSL certificate and configure Nginx
+      command: certbot --nginx --agree-tos --non-interactive --email admin@krakenservers.net -d {{ domain_name }}
+      args:
+        creates: /etc/letsencrypt/live/{{ domain_name }}/fullchain.pem
 
     - name: Add Certbot renewal to crontab
       cron:
