@@ -1,6 +1,6 @@
 - hosts: "all"
   vars_files:
-    - ~/ansible/vars/main.yml
+    - "{{ playbook_dir }}/../vars/main.yml"
   become: "yes"
   
   handlers:
