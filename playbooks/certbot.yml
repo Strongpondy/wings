@@ -9,6 +9,10 @@
     html_dest_path: "/var/www/html/index.html"
 
   tasks:
+    - name: Show domain name
+      debug:
+        msg: "Domain is {{ domain_name }}"
+        
     - name: Update apt package cache
       apt:
         update_cache: yes
