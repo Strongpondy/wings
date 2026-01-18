@@ -5,22 +5,10 @@
 
   vars:
     wings_panel_url: "https://panel.krakenservers.net"
-    ansible_pull_env_file: "/etc/ansible-pull.env"
+    wings_token: "{{ lookup('env','PROVISION_TOKEN') }}"
+    wings_node: "{{ lookup('env','PROVISION_NODE') }}"
 
-  tasks:
-    - name: Load ansible-pull environment variables
-      set_fact:
-        ansible_pull_env: >-
-          {{
-            lookup('file', ansible_pull_env_file)
-            | split('\n')
-            | map('trim')
-            | reject('equalto','')
-            | map('split', '=', 1)
-            | list
-            | items2dict
-          }}
- 
+  tasks: 
     - name: Create directory for Wings config
       file:
         path: /etc/pterodactyl
@@ -42,7 +30,7 @@
 
     - name: Configure Wings with panel URL and token
       shell: |
-        cd /etc/pterodactyl && wings configure --panel-url {{ wings_panel_url }} --token {{ ansible_pull_env.PROVISION_TOKEN }} --node {{ ansible_pull_env.PROVISION_NODE }}
+        cd /etc/pterodactyl && wings configure --panel-url {{ wings_panel_url }} --token {{ wings_token }} --node {{ wings_node }}
       args:
         executable: /bin/bash
 
