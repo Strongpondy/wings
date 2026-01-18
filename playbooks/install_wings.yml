@@ -8,11 +8,7 @@
     wings_token: "{{ lookup('env','PROVISION_TOKEN') }}"
     wings_node: "{{ lookup('env','PROVISION_NODE') }}"
 
-  tasks: 
-    - name: Show domain name
-      debug:
-        msg: "Domain is {{ domain_name }}"
-  
+  tasks:   
     - name: Create directory for Wings config
       file:
         path: /etc/pterodactyl
