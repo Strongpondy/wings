@@ -2,6 +2,8 @@
 - name: Install and Configure Certbot with Nginx
   hosts: "all"
   become: yes
+  environment:
+    PROVISION_FQDN: "{{ lookup('env', 'PROVISION_FQDN') }}"
 
   vars:
     domain_name: "{{ lookup('env','PROVISION_FQDN') }}"
