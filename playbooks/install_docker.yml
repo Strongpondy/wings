@@ -22,7 +22,12 @@
       repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} stable"
       state: present
 
-
+  - name: Remove old docker-compose package if present
+    ansible.builtin.apt:
+      name: docker-compose
+      state: absent
+      purge: yes
+      update_cache: yes
 
   - name: Install Docker
     apt:
@@ -33,3 +38,5 @@
       - containerd.io
       - docker-buildx-plugin
       - docker-compose-plugin
+      state: present
+      update_cache: yes
